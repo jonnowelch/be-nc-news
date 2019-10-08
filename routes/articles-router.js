@@ -4,8 +4,17 @@ const articlesRouter = require('express').Router();
 //   console.log('articles router');
 // });
 
-const { sendArticles } = require('../contollers/articles-controllers');
+const {
+  sendArticles,
+  patchVotesOnArticles
+} = require('../contollers/articles-controllers');
+
+const { postNewComment } = require('../contollers/comments-controllers');
 
 articlesRouter.get('/:article_id', sendArticles);
+
+articlesRouter.patch('/:article_id', patchVotesOnArticles);
+
+articlesRouter.post('/:article_id/comments', postNewComment);
 
 module.exports = articlesRouter;
