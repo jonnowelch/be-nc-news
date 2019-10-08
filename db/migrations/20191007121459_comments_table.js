@@ -11,6 +11,6 @@ exports.up = function(knex) {
 };
 
 exports.down = function(knex) {
-  console.log('in the comments down fucntion');
+  console.log('in the comments down function');
   return knex.schema.dropTable('comments_table');
 };

@@ -3,9 +3,30 @@ exports.formatDates = list => {
     created_at: new Date(created_at),
     ...restOfKeys
   }));
-  //   console.log(formattedObj, 'formobj here');
+  //   console.log(formattedArr);
   return formattedArr;
 };
-exports.makeRefObj = list => {};
+exports.makeRefObj = (list, key, value) => {
+  if (!list.length) return {};
 
-exports.formatComments = (comments, articleRef) => {};
+  const refObj = {};
+
+  list.forEach(item => {
+    refObj[item[value]] = item[key];
+  });
+
+  return refObj;
+};
+
+exports.formatComments = (comments, articleRef) => {
+  return comments.map(element => {
+    const { ...newElement } = element;
+    newElement.author = newElement.created_by;
+    newElement.article_id = newElement.belongs_to;
+    newElement.article_id = articleRef[newElement.article_id];
+    newElement.created_at = new Date(newElement.created_at);
+    delete newElement.belongs_to;
+    delete newElement.created_by;
+    return newElement;
+  });
+};
