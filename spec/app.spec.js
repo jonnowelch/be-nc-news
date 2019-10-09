@@ -46,7 +46,7 @@ describe('/api', () => {
         });
     });
   });
-  describe('/articles', () => {
+  describe.only('/articles', () => {
     it('GET /: article_id returns article with input article id', () => {
       return request
         .get('/api/articles/1')
@@ -76,20 +76,33 @@ describe('/api', () => {
           expect(response.body.votes).to.equal(101);
         });
     });
-    it.only('POST 201 /:article_id/comments lets you post a comment to an article', () => {
+    it('POST 201 /:article_id/comments lets you post a comment to an article', () => {
       return request
         .post('/api/articles/1/comments')
         .expect(201)
-        .send({ username: 'rogersop', body: 'shut up you bloody guy' })
+        .send({ username: 'rogersop', body: 'shut up you bloody guy' }, 1)
         .then(response => {
-          expect(response.body).to.contain.keys(
+          expect(response.body[0]).to.have.keys(
             'comment_id',
             'body',
             'author',
-            'updated_at',
             'votes',
             'created_at',
             'article_id'
+          );
+        });
+    });
+    it('GET 200 /:article_id/comments returns an array of comments for the article', () => {
+      return request
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(response => {
+          expect(response.body).to.contain.keys(
+            'comment_id',
+            'votes',
+            'created_at',
+            'author',
+            'body'
           );
         });
     });

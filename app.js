@@ -14,4 +14,7 @@ app.use('/api', apiRouter);
 // app.use(handlePsqlErrors);
 // app.use(handleCustomErrors);
 
+app.use((err, req, res, next) => {
+  console.log(err);
+});
 module.exports = app;
