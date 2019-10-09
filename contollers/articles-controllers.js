@@ -1,8 +1,19 @@
-const { selectArticles, updateArticles } = require('../models/articles-models');
+const {
+  selectAllArticles,
+  selectArticlesById,
+  updateArticles
+} = require('../models/articles-models');
 
-exports.sendArticles = (req, res, next) => {
-  selectArticles(req.params.article_id).then(article => {
-    res.send({ article });
+exports.sendAllArticles = (req, res, next) => {
+  selectAllArticles(req.query).then(articles => {
+    // console.log(articles, '****');
+    res.status(200).send({ articles });
+  });
+};
+
+exports.sendArticlesById = (req, res, next) => {
+  selectArticlesById(req.params.article_id).then(article => {
+    res.status(200).send({ article });
   });
 };
 

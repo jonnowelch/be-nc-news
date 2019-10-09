@@ -5,7 +5,8 @@ const articlesRouter = require('express').Router();
 // });
 
 const {
-  sendArticles,
+  sendAllArticles,
+  sendArticlesById,
   patchVotesOnArticles
 } = require('../contollers/articles-controllers');
 
@@ -14,7 +15,9 @@ const {
   sendCommentsByArticleId
 } = require('../contollers/comments-controllers');
 
-articlesRouter.get('/:article_id', sendArticles);
+articlesRouter.get('/', sendAllArticles);
+
+articlesRouter.get('/:article_id', sendArticlesById);
 
 articlesRouter.patch('/:article_id', patchVotesOnArticles);
 

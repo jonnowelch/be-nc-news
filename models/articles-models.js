@@ -1,6 +1,30 @@
 const connection = require('../db/connections');
 
-exports.selectArticles = article_id => {
+exports.selectAllArticles = query => {
+  const sort = query.sort_by || 'created_at';
+  const order = query.order || 'desc';
+  console.log(query, 'query');
+  return connection
+    .select('articles_table.*')
+    .from('articles_table')
+    .leftJoin(
+      'comments_table',
+      'articles_table.article_id',
+      'comments_table.article_id'
+    )
+    .count({ comment_count: 'comment_id' })
+    .groupBy('articles_table.article_id')
+    .orderBy(sort, order)
+    .modify(queryBuilder => {
+      if (query.author) queryBuilder.where('author', query.author);
+    })
+    .then(articles => {
+      // console.log(articles, '****');
+      return articles;
+    });
+};
+
+exports.selectArticlesById = article_id => {
   return connection
     .select('articles_table.*')
     .from('articles_table')
