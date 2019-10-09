@@ -86,8 +86,17 @@ describe('/api', () => {
         .get('/api/articles?author=rogersop')
         .expect(200)
         .then(response => {
-          console.log(response.body);
+          // console.log(response.body);
           expect(response.body.articles[0].author).to.deep.equal('rogersop');
+        });
+    });
+    it('GET 200 /topic=:topicname lets you filter all of the given topic', () => {
+      return request
+        .get('/api/articles?topic=mitch')
+        .expect(200)
+        .then(response => {
+          // console.log(response.body.articles, '***');
+          expect(response.body.articles[0].topic).to.deep.equal('mitch');
         });
     });
     it('GET /: article_id returns article with input article id', () => {
@@ -169,6 +178,17 @@ describe('/api', () => {
             expect(response.body.comments).to.be.ascendingBy('author');
           });
       });
+    });
+  });
+  describe.only('/comments', () => {
+    it('PATCH 202 able to update the votes property of a comment', () => {
+      return request
+        .patch('/api/comments/')
+        .expect(202)
+        .send({ inc_vote: 1 })
+        .then(response => {
+          expect(response.body.votes).to.equal(1);
+        });
     });
   });
 });

@@ -3,7 +3,7 @@ const connection = require('../db/connections');
 exports.selectAllArticles = query => {
   const sort = query.sort_by || 'created_at';
   const order = query.order || 'desc';
-  console.log(query, 'query');
+  // console.log(query.topic, 'query');
   return connection
     .select('articles_table.*')
     .from('articles_table')
@@ -16,7 +16,9 @@ exports.selectAllArticles = query => {
     .groupBy('articles_table.article_id')
     .orderBy(sort, order)
     .modify(queryBuilder => {
-      if (query.author) queryBuilder.where('author', query.author);
+      if (query.author)
+        queryBuilder.where('articles_table.author', query.author);
+      if (query.topic) queryBuilder.where('topic', query.topic);
     })
     .then(articles => {
       // console.log(articles, '****');

@@ -13,4 +13,7 @@ apiRouter.use('/users', usersRouter);
 const articlesRouter = require('./articles-router');
 apiRouter.use('/articles', articlesRouter);
 
+const commentsRouter = require('./comments-router');
+apiRouter.use('/comments', commentsRouter);
+
 module.exports = apiRouter;
