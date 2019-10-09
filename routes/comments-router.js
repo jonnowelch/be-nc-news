@@ -4,8 +4,13 @@ const commentsRouter = require('express').Router();
 //   console.log('hello from comments router');
 // });
 
-const { patchCommentVote } = require('../contollers/comments-controllers');
+const {
+  patchCommentVote,
+  deleteComment
+} = require('../contollers/comments-controllers');
 
 commentsRouter.patch('/:comment_id', patchCommentVote);
+
+commentsRouter.delete('/:comment_id', deleteComment);
 
 module.exports = commentsRouter;

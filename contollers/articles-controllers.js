@@ -18,8 +18,6 @@ exports.sendArticlesById = (req, res, next) => {
 };
 
 exports.patchVotesOnArticles = (req, res, next) => {
-  //   console.log(req.body.inc_vote, 'vote increase');
-  console.log(req.params, 'article id');
   updateArticles(req.body.inc_vote, req.params.article_id).then(article => {
     res.status(202).send(article);
   });

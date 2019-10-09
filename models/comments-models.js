@@ -34,3 +34,12 @@ exports.updateCommentVote = (vote_update_amount, article_id) => {
       return response[0];
     });
 };
+
+exports.removeComment = comment_id => {
+  // console.log(comment_id);
+  return connection
+    .into('comments_table')
+    .where('comment_id', comment_id)
+    .delete()
+    .returning('*');
+};

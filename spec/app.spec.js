@@ -8,6 +8,17 @@ const chaiSorted = require('chai-sorted');
 const chai = require('chai');
 chai.use(chaiSorted);
 
+describe('/not-valid-route', () => {
+  it('returns a 404 error when an invalid route is used', () => {
+    return request
+      .get('/hellocheeky')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).to.equal('route not found');
+      });
+  });
+});
+
 describe('/api', () => {
   beforeEach(() => connection.seed.run());
   after(() => {
@@ -180,7 +191,7 @@ describe('/api', () => {
       });
     });
   });
-  describe.only('/comments', () => {
+  describe('/comments', () => {
     it('PATCH 202 /:comment_id able to update the votes property of a comment', () => {
       return request
         .patch('/api/comments/1')
@@ -189,6 +200,9 @@ describe('/api', () => {
         .then(response => {
           expect(response.body.votes).to.equal(15);
         });
+    });
+    it('DELETE 204 /: comment_id deletes a comment', () => {
+      return request.delete('/api/comments/1').expect(204);
     });
   });
 });
