@@ -53,7 +53,15 @@ describe('/api', () => {
             'avatar_url',
             'name'
           );
-          // console.log(response.body.user[0]);
+        });
+    });
+    it('GET 400 returns message saying invalid username type', () => {
+      return request
+        .get('/api/users/123')
+        .send('Invalid input')
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal('Invalid input');
         });
     });
   });
