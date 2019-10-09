@@ -181,13 +181,13 @@ describe('/api', () => {
     });
   });
   describe.only('/comments', () => {
-    it('PATCH 202 able to update the votes property of a comment', () => {
+    it('PATCH 202 /:comment_id able to update the votes property of a comment', () => {
       return request
-        .patch('/api/comments/')
+        .patch('/api/comments/1')
         .expect(202)
-        .send({ inc_vote: 1 })
+        .send({ inc_votes: 1 })
         .then(response => {
-          expect(response.body.votes).to.equal(1);
+          expect(response.body.votes).to.equal(15);
         });
     });
   });

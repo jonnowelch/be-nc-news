@@ -1,12 +1,11 @@
 const commentsRouter = require('express').Router();
-// console.log('hello');
 
-commentsRouter.get('/', () => {
-  console.log('hello from comments router');
-});
+// commentsRouter.patch('/', () => {
+//   console.log('hello from comments router');
+// });
 
-// const { sendcomments } = require('../contollers/comments-controllers');
+const { patchCommentVote } = require('../contollers/comments-controllers');
 
-// commentsRouter.get('/', sendcomments);
+commentsRouter.patch('/:comment_id', patchCommentVote);
 
 module.exports = commentsRouter;

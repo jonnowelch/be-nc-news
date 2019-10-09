@@ -1,6 +1,7 @@
 const {
   addComment,
-  selectCommentsByArticleId
+  selectCommentsByArticleId,
+  updateCommentVote
 } = require('../models/comments-models');
 
 exports.postNewComment = (req, res, next) => {
@@ -22,5 +23,14 @@ exports.sendCommentsByArticleId = (req, res, next) => {
     req.query.order
   ).then(comments => {
     res.status(200).send({ comments });
+  });
+};
+
+exports.patchCommentVote = (req, res, next) => {
+  console.log(req.body, 'votes');
+  console.log(req.params, 'id');
+
+  updateCommentVote(req.body.inc_votes, req.params.comment_id).then(comment => {
+    res.status(202).send(comment);
   });
 };

@@ -23,3 +23,14 @@ exports.selectCommentsByArticleId = (article_id, sort_by, order) => {
       return comments;
     });
 };
+
+exports.updateCommentVote = (vote_update_amount, article_id) => {
+  return connection
+    .into('comments_table')
+    .increment('votes', vote_update_amount || 0)
+    .where('article_id', article_id)
+    .returning('*')
+    .then(response => {
+      return response[0];
+    });
+};
