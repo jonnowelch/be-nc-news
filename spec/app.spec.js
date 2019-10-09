@@ -92,19 +92,28 @@ describe('/api', () => {
           );
         });
     });
-    it('GET 200 /:article_id/comments returns an array of comments for the article', () => {
+    it.only('GET 200 /:article_id/comments returns an array of comments for the article', () => {
       return request
-        .get('/api/articles/1/comments')
+        .get('/api/articles/9/comments')
         .expect(200)
         .then(response => {
-          expect(response.body).to.contain.keys(
+          // console.log(response.body.comments, 'in spec');
+          expect(response.body.comments[0]).to.contain.keys(
             'comment_id',
             'votes',
             'created_at',
             'author',
             'body'
           );
+          expect(response.body.comments).to.have.length(2);
         });
     });
+    it('GET 200 /:article_id/comments?sortby=author');
   });
 });
+// it("GET: 200 - queries can be used to change what is sorted by and asc or desc", () => {
+//   return request(app)
+//     .get("/api/treasures?sortby=age&order=desc")
+//     .expect(200)
+//     .then(res => {
+//       expect(res.body).to.be.sortedBy("age", { descending: true });
