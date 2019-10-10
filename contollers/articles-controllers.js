@@ -7,7 +7,6 @@ const {
 exports.sendAllArticles = (req, res, next) => {
   selectAllArticles(req.query)
     .then(articles => {
-      // console.log(articles, '****');
       res.status(200).send({ articles });
     })
     .catch(next);

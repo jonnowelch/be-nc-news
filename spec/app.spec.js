@@ -9,7 +9,7 @@ const chai = require('chai');
 chai.use(chaiSorted);
 
 describe('/not-valid-route', () => {
-  it('returns a 404 error when an invalid route is used', () => {
+  it('ERROR returns a 404 error when an invalid route is used', () => {
     return request
       .get('/hellocheeky')
       .expect(404)
@@ -55,7 +55,7 @@ describe('/api', () => {
           );
         });
     });
-    it('GET 400 returns message saying username does not exist', () => {
+    it('GET ERROR 404 returns message saying username does not exist', () => {
       return request
         .get('/api/users/123')
         .expect(404)
@@ -99,16 +99,16 @@ describe('/api', () => {
           expect(response.body.articles).to.be.ascendingBy('author')
         );
     });
-    // it('GET 200 ERROR sends error message when trying to order by not ascending or dexcending', () => {
-    //   return request
-    //     .get('/api/articles?order=charleston')
-    //     .expect(400)
-    //     .then(response => {
-    //       expect(response.body.msg).to.equal(
-    //         'Please sort by ascending or descending'
-    //       );
-    //     });
-    // });
+    it('GET 200 ERROR sends error message when trying to order by not ascending or descending', () => {
+      return request
+        .get('/api/articles?order=charleston')
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal(
+            'Please sort by ascending or descending'
+          );
+        });
+    });
     it('GET ERROR sends error message when trying to sort by a column not present', () => {
       return request
         .get('/api/articles?sort_by=spongebob')
@@ -172,21 +172,11 @@ describe('/api', () => {
               expect(response.body.msg).to.equal('article doesnt exist');
             });
         });
-        // it('POST ERROR trying to post a comment missing an article_id', () => {
-        //   return request
-        //     .post('/api/articles/comments')
-        //     .expect(400)
-        //     .send({ username: 'rogersop', body: 'shut up you bloody guy' })
-        //     .then(response => {
-        //       console.log(response.body.msg);
-        //     });
-        // });
         it('GET 200 /comments returns an array of comments for the article', () => {
           return request
             .get('/api/articles/9/comments')
             .expect(200)
             .then(response => {
-              // console.log(response.body.comments, 'in spec');
               expect(response.body.comments[0]).to.contain.keys(
                 'comment_id',
                 'votes',
@@ -235,6 +225,15 @@ describe('/api', () => {
           .send({ inc_vote: 1 })
           .then(response => {
             expect(response.body.votes).to.equal(101);
+          });
+      });
+      it('PATCH error number not included to alter votes by', () => {
+        return request
+          .patch('/api/articles/1')
+          .expect(400)
+          .send({ inc_vote: 'dave' })
+          .then(response => {
+            expect(response.body.msg).to.equal('must increase votes by number');
           });
       });
       it('GET 200 queries can be used to change what is sorted and by asc or desc', () => {

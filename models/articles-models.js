@@ -2,6 +2,14 @@ const connection = require('../db/connections');
 
 exports.selectAllArticles = query => {
   const sort = query.sort_by || 'created_at';
+  if (query.order) {
+    if (query.order !== 'asc' && query.order !== 'desc') {
+      return Promise.reject({
+        status: 400,
+        msg: 'Please sort by ascending or descending'
+      });
+    }
+  }
   const order = query.order || 'desc';
   return connection
     .select('articles_table.*')
@@ -47,6 +55,14 @@ exports.selectArticlesById = article_id => {
 };
 
 exports.updateArticles = (vote_update_amount, article_id) => {
+  if (vote_update_amount) {
+    if (isNaN(parseInt(vote_update_amount))) {
+      return Promise.reject({
+        status: 400,
+        msg: 'must increase votes by number'
+      });
+    }
+  }
   return connection
     .into('articles_table')
     .increment('votes', vote_update_amount || 0)
