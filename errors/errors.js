@@ -1,8 +1,14 @@
 exports.handlePsqlErrors = (err, req, res, next) => {
   // console.log(err, 'hihih');
-  const psqlCodes = { '42703': 'Search value does not exist in table' };
-  if (psqlCodes[err.code]) {
-    res.status(400).send({ msg: psqlCodes[err.code] });
+  const psqlCodes400 = {
+    '42703': 'Search value does not exist in table'
+  };
+  const psqlCodes404 = { '23503': 'article doesnt exist' };
+  if (psqlCodes400[err.code]) {
+    res.status(400).send({ msg: psqlCodes400[err.code] });
+  }
+  if (psqlCodes404[err.code]) {
+    res.status(404).send({ msg: psqlCodes404[err.code] });
   } else next(err);
 };
 

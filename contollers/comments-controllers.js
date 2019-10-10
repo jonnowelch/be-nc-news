@@ -14,7 +14,6 @@ exports.postNewComment = (req, res, next) => {
 };
 
 exports.sendCommentsByArticleId = (req, res, next) => {
-  // console.log(req.query.order, '/////');
   const {
     params: { article_id }
   } = req;

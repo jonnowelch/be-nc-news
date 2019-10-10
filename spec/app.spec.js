@@ -99,7 +99,17 @@ describe('/api', () => {
           expect(response.body.articles).to.be.ascendingBy('author')
         );
     });
-    it('GET 200 ERROR sends error message when trying to sort by a column not present', () => {
+    // it('GET 200 ERROR sends error message when trying to order by not ascending or dexcending', () => {
+    //   return request
+    //     .get('/api/articles?order=charleston')
+    //     .expect(400)
+    //     .then(response => {
+    //       expect(response.body.msg).to.equal(
+    //         'Please sort by ascending or descending'
+    //       );
+    //     });
+    // });
+    it('GET ERROR sends error message when trying to sort by a column not present', () => {
       return request
         .get('/api/articles?sort_by=spongebob')
         .expect(400)
@@ -118,7 +128,7 @@ describe('/api', () => {
           expect(response.body.articles[0].author).to.deep.equal('rogersop');
         });
     });
-    it('GET 200 ERROR /author = not_an_author', () => {
+    it('GET ERROR /author = not_an_author', () => {
       return request
         .get('/api/articles?author=krishan')
         .expect(404)
@@ -141,7 +151,7 @@ describe('/api', () => {
           return request
             .post('/api/articles/1/comments')
             .expect(201)
-            .send({ username: 'rogersop', body: 'shut up you bloody guy' }, 1)
+            .send({ username: 'rogersop', body: 'shut up you bloody guy' })
             .then(response => {
               expect(response.body[0]).to.have.keys(
                 'comment_id',
@@ -153,6 +163,24 @@ describe('/api', () => {
               );
             });
         });
+        it('POST ERROR 404 trying to post a comment to an article that doesnt exist', () => {
+          return request
+            .post('/api/articles/1000/comments')
+            .expect(404)
+            .send({ username: 'rogersop', body: 'shut up you bloody guy' })
+            .then(response => {
+              expect(response.body.msg).to.equal('article doesnt exist');
+            });
+        });
+        // it('POST ERROR trying to post a comment missing an article_id', () => {
+        //   return request
+        //     .post('/api/articles/comments')
+        //     .expect(400)
+        //     .send({ username: 'rogersop', body: 'shut up you bloody guy' })
+        //     .then(response => {
+        //       console.log(response.body.msg);
+        //     });
+        // });
         it('GET 200 /comments returns an array of comments for the article', () => {
           return request
             .get('/api/articles/9/comments')
@@ -178,6 +206,7 @@ describe('/api', () => {
               expect(response.body.comments).to.be.descendingBy('created_at');
             });
         });
+        it('GET ERROR returns error message for ');
       });
       it('GET /: article_id returns article with input article id', () => {
         return request
