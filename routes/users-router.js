@@ -4,8 +4,13 @@ const usersRouter = require('express').Router();
 //   console.log('users router');
 // });
 
+const { send405Error } = require('../errors');
+
 const { sendUsers } = require('../contollers/users-controllers');
 
-usersRouter.get('/:username', sendUsers);
+usersRouter
+  .route('/:username')
+  .get(sendUsers)
+  .all(send405Error);
 
 module.exports = usersRouter;

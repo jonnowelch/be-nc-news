@@ -15,14 +15,33 @@ const {
   sendCommentsByArticleId
 } = require('../contollers/comments-controllers');
 
-articlesRouter.get('/', sendAllArticles);
+const { send405Error } = require('../errors');
 
-articlesRouter.get('/:article_id', sendArticlesById);
+articlesRouter
+  .route('/')
+  .get(sendAllArticles)
+  .all(send405Error);
 
-articlesRouter.patch('/:article_id', patchVotesOnArticles);
+articlesRouter
+  .route('/:article_id')
+  .get(sendArticlesById)
+  .patch(patchVotesOnArticles)
+  .all(send405Error);
 
-articlesRouter.post('/:article_id/comments', postNewComment);
-
-articlesRouter.get('/:article_id/comments', sendCommentsByArticleId);
+articlesRouter
+  .route('/:article_id/comments')
+  .get(sendCommentsByArticleId)
+  .post(postNewComment)
+  .all(send405Error);
 
 module.exports = articlesRouter;
+
+// articlesRouter.get('/', sendAllArticles);
+
+// articlesRouter.get('/:article_id', sendArticlesById);
+
+// articlesRouter.patch('/:article_id', patchVotesOnArticles);
+
+// articlesRouter.post('/:article_id/comments', postNewComment);
+
+// articlesRouter.get('/:article_id/comments', sendCommentsByArticleId);

@@ -39,6 +39,18 @@ describe('/api', () => {
           );
         });
     });
+    it('METHOD ERROR returns error message when any method other than get used for topics', () => {
+      const invalidMethods = ['patch', 'put', 'delete'];
+      const methodPromises = invalidMethods.map(method => {
+        return request[method]('/api/topics/')
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            console.log(msg);
+            expect(msg).to.deep.equal('method not allowed');
+          });
+      });
+      return Promise.all(methodPromises);
+    });
   });
   describe('/users', () => {
     it('GET /:username 200 returns user with selected username', () => {
@@ -63,6 +75,17 @@ describe('/api', () => {
           expect(response.body.msg).to.equal('Username does not exist');
         });
     });
+    it('METHOD ERROR returns error message when any method other than get used for users by username', () => {
+      const invalidMethods = ['patch', 'put', 'delete'];
+      const methodPromises = invalidMethods.map(method => {
+        return request[method]('/api/users/:username')
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.deep.equal('method not allowed');
+          });
+      });
+      return Promise.all(methodPromises);
+    });
   });
   describe('/articles', () => {
     it('GET returns all articles', () => {
@@ -81,6 +104,17 @@ describe('/api', () => {
             'comment_count'
           );
         });
+    });
+    it('METHOD ERROR returns error message when any method other than get used for /articles', () => {
+      const invalidMethods = ['patch', 'put', 'delete'];
+      const methodPromises = invalidMethods.map(method => {
+        return request[method]('/api/articles')
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.deep.equal('method not allowed');
+          });
+      });
+      return Promise.all(methodPromises);
     });
     it('GET 200 / defaults to sorting by date, descending', () => {
       return request
@@ -146,57 +180,16 @@ describe('/api', () => {
         });
     });
     describe('/:article_id', () => {
-      describe('/comments', () => {
-        it('POST 201 /comments lets you post a comment to an article', () => {
-          return request
-            .post('/api/articles/1/comments')
-            .expect(201)
-            .send({ username: 'rogersop', body: 'shut up you bloody guy' })
-            .then(response => {
-              expect(response.body[0]).to.have.keys(
-                'comment_id',
-                'body',
-                'author',
-                'votes',
-                'created_at',
-                'article_id'
-              );
+      it('METHOD ERROR returns error message when any method other than get or patch used for /articles/:article_id', () => {
+        const invalidMethods = ['put', 'delete'];
+        const methodPromises = invalidMethods.map(method => {
+          return request[method]('/api/users/:username')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.deep.equal('method not allowed');
             });
         });
-        it('POST ERROR 404 trying to post a comment to an article that doesnt exist', () => {
-          return request
-            .post('/api/articles/1000/comments')
-            .expect(404)
-            .send({ username: 'rogersop', body: 'shut up you bloody guy' })
-            .then(response => {
-              expect(response.body.msg).to.equal('article doesnt exist');
-            });
-        });
-        it('GET 200 /comments returns an array of comments for the article', () => {
-          return request
-            .get('/api/articles/9/comments')
-            .expect(200)
-            .then(response => {
-              expect(response.body.comments[0]).to.contain.keys(
-                'comment_id',
-                'votes',
-                'created_at',
-                'author',
-                'body'
-              );
-              expect(response.body.comments).to.have.length(2);
-            });
-        });
-        it('GET 200 /comments?sortby=query defaults to sorting by created_at, descending', () => {
-          return request
-            .get('/api/articles/1/comments')
-            .expect(200)
-            .then(response => {
-              // console.log(response.body);
-              expect(response.body.comments).to.be.descendingBy('created_at');
-            });
-        });
-        it('GET ERROR returns error message for ');
+        return Promise.all(methodPromises);
       });
       it('GET /: article_id returns article with input article id', () => {
         return request
@@ -244,6 +237,68 @@ describe('/api', () => {
             expect(response.body.comments).to.be.ascendingBy('author');
           });
       });
+      describe('/comments', () => {
+        it('POST 201 /comments lets you post a comment to an article', () => {
+          return request
+            .post('/api/articles/1/comments')
+            .expect(201)
+            .send({ username: 'rogersop', body: 'shut up you bloody guy' })
+            .then(response => {
+              expect(response.body[0]).to.have.keys(
+                'comment_id',
+                'body',
+                'author',
+                'votes',
+                'created_at',
+                'article_id'
+              );
+            });
+        });
+        it('METHOD ERROR returns error message when any method other than get or post used for /articles/:articleid/comments', () => {
+          const invalidMethods = ['patch', 'delete'];
+          const methodPromises = invalidMethods.map(method => {
+            return request[method]('/api/articles/1/comments')
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('method not allowed');
+              });
+          });
+          return Promise.all(methodPromises);
+        });
+        it('POST ERROR 404 trying to post a comment to an article that doesnt exist', () => {
+          return request
+            .post('/api/articles/1000/comments')
+            .expect(404)
+            .send({ username: 'rogersop', body: 'shut up you bloody guy' })
+            .then(response => {
+              expect(response.body.msg).to.equal('article doesnt exist');
+            });
+        });
+        it('GET 200 /comments returns an array of comments for the article', () => {
+          return request
+            .get('/api/articles/9/comments')
+            .expect(200)
+            .then(response => {
+              expect(response.body.comments[0]).to.contain.keys(
+                'comment_id',
+                'votes',
+                'created_at',
+                'author',
+                'body'
+              );
+              expect(response.body.comments).to.have.length(2);
+            });
+        });
+        it('GET 200 /comments?sortby=query defaults to sorting by created_at, descending', () => {
+          return request
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(response => {
+              // console.log(response.body);
+              expect(response.body.comments).to.be.descendingBy('created_at');
+            });
+        });
+      });
     });
   });
   describe('/comments', () => {
@@ -259,6 +314,17 @@ describe('/api', () => {
       });
       it('DELETE 204 /: comment_id deletes a comment', () => {
         return request.delete('/api/comments/1').expect(204);
+      });
+      it('METHOD ERROR returns error message when any method other than patch or delete used for /:comment_id', () => {
+        const invalidMethods = ['get', 'post'];
+        const methodPromises = invalidMethods.map(method => {
+          return request[method]('/api/comments/1')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.deep.equal('method not allowed');
+            });
+        });
+        return Promise.all(methodPromises);
       });
     });
   });

@@ -12,6 +12,7 @@ exports.addComment = (username, body, article_id) => {
 
 exports.selectCommentsByArticleId = (article_id, sort_by, order) => {
   const sortBy = sort_by || 'created_at';
+
   const sortOrder = order || 'desc';
   // console.log(order, '***');
   return connection
