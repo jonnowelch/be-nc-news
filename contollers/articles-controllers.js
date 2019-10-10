@@ -5,20 +5,26 @@ const {
 } = require('../models/articles-models');
 
 exports.sendAllArticles = (req, res, next) => {
-  selectAllArticles(req.query).then(articles => {
-    // console.log(articles, '****');
-    res.status(200).send({ articles });
-  });
+  selectAllArticles(req.query)
+    .then(articles => {
+      // console.log(articles, '****');
+      res.status(200).send({ articles });
+    })
+    .catch(next);
 };
 
 exports.sendArticlesById = (req, res, next) => {
-  selectArticlesById(req.params.article_id).then(article => {
-    res.status(200).send({ article });
-  });
+  selectArticlesById(req.params.article_id)
+    .then(article => {
+      res.status(200).send({ article });
+    })
+    .catch(next);
 };
 
 exports.patchVotesOnArticles = (req, res, next) => {
-  updateArticles(req.body.inc_vote, req.params.article_id).then(article => {
-    res.status(202).send(article);
-  });
+  updateArticles(req.body.inc_vote, req.params.article_id)
+    .then(article => {
+      res.status(202).send(article);
+    })
+    .catch(next);
 };

@@ -2,6 +2,7 @@ const connection = require('../db/connections');
 
 exports.selectAllArticles = query => {
   const sort = query.sort_by || 'created_at';
+  console.log(sort);
   const order = query.order || 'desc';
   return connection
     .select('articles_table.*')
@@ -15,11 +16,17 @@ exports.selectAllArticles = query => {
     .groupBy('articles_table.article_id')
     .orderBy(sort, order)
     .modify(queryBuilder => {
+      console.log(query.author);
       if (query.author)
         queryBuilder.where('articles_table.author', query.author);
       if (query.topic) queryBuilder.where('topic', query.topic);
     })
     .then(articles => {
+      if (!articles.length)
+        return Promise.reject({
+          status: 404,
+          msg: 'Author does not exist'
+        });
       return articles;
     });
 };

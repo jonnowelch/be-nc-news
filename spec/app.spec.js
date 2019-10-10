@@ -48,20 +48,19 @@ describe('/api', () => {
         .then(response => {
           expect(response.body).to.be.an('object');
           expect(response.body).to.contain.keys('user');
-          expect(response.body.user[0]).to.contain.keys(
+          expect(response.body.user).to.contain.keys(
             'username',
             'avatar_url',
             'name'
           );
         });
     });
-    it('GET 400 returns message saying invalid username type', () => {
+    it('GET 400 returns message saying username does not exist', () => {
       return request
         .get('/api/users/123')
-        .send('Invalid input')
-        .expect(400)
+        .expect(404)
         .then(response => {
-          expect(response.body.msg).to.equal('Invalid input');
+          expect(response.body.msg).to.equal('Username does not exist');
         });
     });
   });
@@ -100,6 +99,16 @@ describe('/api', () => {
           expect(response.body.articles).to.be.ascendingBy('author')
         );
     });
+    it('GET 200 ERROR sends error message when trying to sort by a column not present', () => {
+      return request
+        .get('/api/articles?sort_by=spongebob')
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal(
+            'Search value does not exist in table'
+          );
+        });
+    });
     it('GET 200 /author=:authorname lets you filter all of an authors articles', () => {
       return request
         .get('/api/articles?author=rogersop')
@@ -107,6 +116,14 @@ describe('/api', () => {
         .then(response => {
           // console.log(response.body);
           expect(response.body.articles[0].author).to.deep.equal('rogersop');
+        });
+    });
+    it('GET 200 ERROR /author = not_an_author', () => {
+      return request
+        .get('/api/articles?author=krishan')
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal('Author does not exist');
         });
     });
     it('GET 200 /topic=:topicname lets you filter all of the given topic', () => {
@@ -118,27 +135,70 @@ describe('/api', () => {
           expect(response.body.articles[0].topic).to.deep.equal('mitch');
         });
     });
-    it('GET /: article_id returns article with input article id', () => {
-      return request
-        .get('/api/articles/1')
-        .expect(200)
-        .then(response => {
-          expect(response.body).to.be.an('object');
-          expect(response.body).to.contain.keys('article');
-          expect(response.body.article[0].comment_count).to.equal('13');
-          expect(response.body.article[0]).to.contain.keys(
-            'author',
-            'title',
-            'article_id',
-            'body',
-            'topic',
-            'created_at',
-            'votes',
-            'comment_count'
-          );
-        });
-    });
     describe('/:article_id', () => {
+      describe('/comments', () => {
+        it('POST 201 /comments lets you post a comment to an article', () => {
+          return request
+            .post('/api/articles/1/comments')
+            .expect(201)
+            .send({ username: 'rogersop', body: 'shut up you bloody guy' }, 1)
+            .then(response => {
+              expect(response.body[0]).to.have.keys(
+                'comment_id',
+                'body',
+                'author',
+                'votes',
+                'created_at',
+                'article_id'
+              );
+            });
+        });
+        it('GET 200 /comments returns an array of comments for the article', () => {
+          return request
+            .get('/api/articles/9/comments')
+            .expect(200)
+            .then(response => {
+              // console.log(response.body.comments, 'in spec');
+              expect(response.body.comments[0]).to.contain.keys(
+                'comment_id',
+                'votes',
+                'created_at',
+                'author',
+                'body'
+              );
+              expect(response.body.comments).to.have.length(2);
+            });
+        });
+        it('GET 200 /comments?sortby=query defaults to sorting by created_at, descending', () => {
+          return request
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(response => {
+              // console.log(response.body);
+              expect(response.body.comments).to.be.descendingBy('created_at');
+            });
+        });
+      });
+      it('GET /: article_id returns article with input article id', () => {
+        return request
+          .get('/api/articles/1')
+          .expect(200)
+          .then(response => {
+            expect(response.body).to.be.an('object');
+            expect(response.body).to.contain.keys('article');
+            expect(response.body.article[0].comment_count).to.equal('13');
+            expect(response.body.article[0]).to.contain.keys(
+              'author',
+              'title',
+              'article_id',
+              'body',
+              'topic',
+              'created_at',
+              'votes',
+              'comment_count'
+            );
+          });
+      });
       it('PATCH 202 able to update the votes property in the database', () => {
         return request
           .patch('/api/articles/1')
@@ -146,47 +206,6 @@ describe('/api', () => {
           .send({ inc_vote: 1 })
           .then(response => {
             expect(response.body.votes).to.equal(101);
-          });
-      });
-      it('POST 201 /comments lets you post a comment to an article', () => {
-        return request
-          .post('/api/articles/1/comments')
-          .expect(201)
-          .send({ username: 'rogersop', body: 'shut up you bloody guy' }, 1)
-          .then(response => {
-            expect(response.body[0]).to.have.keys(
-              'comment_id',
-              'body',
-              'author',
-              'votes',
-              'created_at',
-              'article_id'
-            );
-          });
-      });
-      it('GET 200 /comments returns an array of comments for the article', () => {
-        return request
-          .get('/api/articles/9/comments')
-          .expect(200)
-          .then(response => {
-            // console.log(response.body.comments, 'in spec');
-            expect(response.body.comments[0]).to.contain.keys(
-              'comment_id',
-              'votes',
-              'created_at',
-              'author',
-              'body'
-            );
-            expect(response.body.comments).to.have.length(2);
-          });
-      });
-      it('GET 200 /comments?sortby=query defaults to sorting by created_at, descending', () => {
-        return request
-          .get('/api/articles/1/comments')
-          .expect(200)
-          .then(response => {
-            // console.log(response.body);
-            expect(response.body.comments).to.be.descendingBy('created_at');
           });
       });
       it('GET 200 queries can be used to change what is sorted and by asc or desc', () => {
@@ -200,17 +219,19 @@ describe('/api', () => {
     });
   });
   describe('/comments', () => {
-    it('PATCH 202 /:comment_id able to update the votes property of a comment', () => {
-      return request
-        .patch('/api/comments/1')
-        .expect(202)
-        .send({ inc_votes: 1 })
-        .then(response => {
-          expect(response.body.votes).to.equal(15);
-        });
-    });
-    it('DELETE 204 /: comment_id deletes a comment', () => {
-      return request.delete('/api/comments/1').expect(204);
+    describe('/:comment_id', () => {
+      it('PATCH 202 /:comment_id able to update the votes property of a comment', () => {
+        return request
+          .patch('/api/comments/1')
+          .expect(202)
+          .send({ inc_votes: 1 })
+          .then(response => {
+            expect(response.body.votes).to.equal(15);
+          });
+      });
+      it('DELETE 204 /: comment_id deletes a comment', () => {
+        return request.delete('/api/comments/1').expect(204);
+      });
     });
   });
 });
