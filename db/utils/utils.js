@@ -3,7 +3,6 @@ exports.formatDates = list => {
     created_at: new Date(created_at),
     ...restOfKeys
   }));
-  //   console.log(formattedArr);
   return formattedArr;
 };
 exports.makeRefObj = (list, key, value) => {

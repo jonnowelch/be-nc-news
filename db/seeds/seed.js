@@ -14,7 +14,6 @@ exports.seed = function(knex) {
     .then(() => {
       const topicsInsertions = knex('topics_table').insert(topicData);
       const usersInsertions = knex('users_table').insert(userData);
-      // console.log(usersInsertions);
       return Promise.all([topicsInsertions, usersInsertions]);
     })
     .then(() => {
@@ -25,7 +24,6 @@ exports.seed = function(knex) {
     })
     .then(articleRows => {
       const articleRef = makeRefObj(articleRows, 'article_id', 'title');
-      // console.log(articleRef);
       const formattedComments = formatComments(commentData, articleRef);
       return knex('comments_table').insert(formattedComments);
     });

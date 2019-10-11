@@ -30,7 +30,6 @@ describe('/api', () => {
         .get('/api/topics')
         .expect(200)
         .then(response => {
-          // console.log(response.body);
           expect(response.body).to.be.an('object');
           expect(response.body).to.contain.keys('topics');
           expect(response.body.topics[0]).to.contain.keys(
@@ -178,7 +177,7 @@ describe('/api', () => {
           expect(response.body.articles[0].topic).to.deep.equal('mitch');
         });
     });
-    describe.only('/:article_id', () => {
+    describe('/:article_id', () => {
       it('METHOD ERROR returns error message when any method other than get or patch used for /articles/:article_id', () => {
         const invalidMethods = ['put', 'delete'];
         const methodPromises = invalidMethods.map(method => {
@@ -216,8 +215,19 @@ describe('/api', () => {
           .get('/api/articles/1000')
           .expect(404)
           .then(response => {
-            console.log(response.body);
+            // console.log(response.body);
             expect(response.body.msg).to.equal('Article does not exist');
+          });
+      });
+      it('GET ERROR /:not a number id given', () => {
+        return request
+          .get('/api/articles/squidge')
+          .expect(400)
+          .then(response => {
+            // console.log(response);
+            expect(response.body.msg).to.equal(
+              'Please provide a valid article id number'
+            );
           });
       });
       it('PATCH 200 able to update the votes property in the database', () => {
@@ -238,15 +248,15 @@ describe('/api', () => {
             expect(response.body.msg).to.equal('must increase votes by number');
           });
       });
-      it('GET 200 queries can be used to change what is sorted and by asc or desc', () => {
-        return request
-          .get('/api/articles/1/comments?sort_by=author&order=asc')
-          .expect(200)
-          .then(response => {
-            expect(response.body.comments).to.be.ascendingBy('author');
-          });
-      });
       describe('/comments', () => {
+        it('GET 200 queries can be used to change what is sorted and by asc or desc', () => {
+          return request
+            .get('/api/articles/1/comments?sort_by=author&order=asc')
+            .expect(200)
+            .then(response => {
+              expect(response.body.comments).to.be.ascendingBy('author');
+            });
+        });
         it('POST 201 /comments lets you post a comment to an article', () => {
           return request
             .post('/api/articles/1/comments')
@@ -298,13 +308,31 @@ describe('/api', () => {
               expect(response.body.comments).to.have.length(2);
             });
         });
+        it('GET ERROR /comments returns an error for an article id that doesnt exist', () => {
+          return request
+            .get('/api/articles/999/comments')
+            .expect(404)
+            .then(response => {
+              expect(response.body.msg).to.equal('Username does not exist');
+            });
+        });
         it('GET 200 /comments?sortby=query defaults to sorting by created_at, descending', () => {
           return request
             .get('/api/articles/1/comments')
             .expect(200)
             .then(response => {
-              // console.log(response.body);
               expect(response.body.comments).to.be.descendingBy('created_at');
+            });
+        });
+        it.only('GET ERROR trying to sort by an order not ascending or descending', () => {
+          return request
+            .get('/api/artciles/1/comments?sort_by=afrocentricity')
+            .expect(400)
+            .then(response => {
+              console.log(response.body, '88888');
+              expect(response.body.message).to.deep.equal(
+                'Please sort by ascending or descending'
+              );
             });
         });
       });

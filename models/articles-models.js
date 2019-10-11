@@ -50,6 +50,12 @@ exports.selectArticlesById = article_id => {
     .count({ comment_count: 'comment_id' })
     .groupBy('articles_table.article_id')
     .then(article => {
+      // console.log(article);
+      if (!article.length)
+        return Promise.reject({
+          status: 404,
+          msg: 'Article does not exist'
+        });
       return article;
     });
 };

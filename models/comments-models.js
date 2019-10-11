@@ -12,15 +12,27 @@ exports.addComment = (username, body, article_id) => {
 
 exports.selectCommentsByArticleId = (article_id, sort_by, order) => {
   const sortBy = sort_by || 'created_at';
-
+  if (query.order) {
+    if (query.order !== 'asc' && query.order !== 'desc') {
+      return Promise.reject({
+        status: 400,
+        msg: 'Please sort by ascending or descending'
+      });
+    }
+  }
   const sortOrder = order || 'desc';
-  // console.log(order, '***');
   return connection
     .select('*')
     .from('comments_table')
     .where({ article_id })
     .orderBy(sortBy, sortOrder)
     .then(comments => {
+      if (!comments.length) {
+        return Promise.reject({
+          status: 404,
+          msg: 'Username does not exist'
+        });
+      }
       return comments;
     });
 };

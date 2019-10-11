@@ -17,24 +17,25 @@ exports.sendCommentsByArticleId = (req, res, next) => {
   const {
     params: { article_id }
   } = req;
-  selectCommentsByArticleId(
-    article_id,
-    req.query.sort_by,
-    req.query.order
-  ).then(comments => {
-    res.status(200).send({ comments });
-  });
+  selectCommentsByArticleId(article_id, req.query.sort_by, req.query.order)
+    .then(comments => {
+      res.status(200).send({ comments });
+    })
+    .catch(next);
 };
 
 exports.patchCommentVote = (req, res, next) => {
-  updateCommentVote(req.body.inc_votes, req.params.comment_id).then(comment => {
-    res.status(200).send(comment);
-  });
+  updateCommentVote(req.body.inc_votes, req.params.comment_id)
+    .then(comment => {
+      res.status(200).send(comment);
+    })
+    .catch(next);
 };
 
 exports.deleteComment = (req, res, next) => {
-  // console.log(req.params);
-  removeComment(req.params.comment_id).then(response => {
-    res.sendStatus(204);
-  });
+  removeComment(req.params.comment_id)
+    .then(response => {
+      res.sendStatus(204);
+    })
+    .catch(next);
 };
