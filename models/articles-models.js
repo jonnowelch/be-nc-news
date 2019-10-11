@@ -1,6 +1,7 @@
 const connection = require('../db/connections');
 
 exports.selectAllArticles = query => {
+  // console.log(query);
   const sort = query.sort_by || 'created_at';
   if (query.order) {
     if (query.order !== 'asc' && query.order !== 'desc') {
@@ -28,6 +29,7 @@ exports.selectAllArticles = query => {
       if (query.topic) queryBuilder.where('topic', query.topic);
     })
     .then(articles => {
+      console.log(articles);
       if (!articles.length)
         return Promise.reject({
           status: 404,

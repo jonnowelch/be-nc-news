@@ -12,8 +12,9 @@ exports.addComment = (username, body, article_id) => {
 
 exports.selectCommentsByArticleId = (article_id, sort_by, order) => {
   const sortBy = sort_by || 'created_at';
-  if (query.order) {
-    if (query.order !== 'asc' && query.order !== 'desc') {
+  // console.log(order);
+  if (order) {
+    if (order !== 'asc' && order !== 'desc') {
       return Promise.reject({
         status: 400,
         msg: 'Please sort by ascending or descending'

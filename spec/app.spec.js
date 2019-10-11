@@ -91,7 +91,6 @@ describe('/api', () => {
         .get('/api/articles')
         .expect(200)
         .then(response => {
-          // console.log(response.body.articles);
           expect(response.body.articles[0]).to.contain.keys(
             'author',
             'title',
@@ -119,7 +118,6 @@ describe('/api', () => {
         .get('/api/articles')
         .expect(200)
         .then(response => {
-          // console.log(response.body.articles)
           expect(response.body.articles).to.be.descendingBy('created_at');
         });
     });
@@ -158,6 +156,14 @@ describe('/api', () => {
         .then(response => {
           // console.log(response.body);
           expect(response.body.articles[0].author).to.deep.equal('rogersop');
+        });
+    });
+    it.only('GET 200 /author=valid author with no articles return an empty array', () => {
+      return request
+        .get('/api/articles?author=lurker')
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles.length).to.deep.equal(0);
         });
     });
     it('GET ERROR /author = not_an_author', () => {
@@ -324,13 +330,12 @@ describe('/api', () => {
               expect(response.body.comments).to.be.descendingBy('created_at');
             });
         });
-        it.only('GET ERROR trying to sort by an order not ascending or descending', () => {
+        it('GET ERROR trying to sort by an order not ascending or descending', () => {
           return request
-            .get('/api/artciles/1/comments?sort_by=afrocentricity')
+            .get('/api/articles/1/comments?order=afrocentricity')
             .expect(400)
             .then(response => {
-              console.log(response.body, '88888');
-              expect(response.body.message).to.deep.equal(
+              expect(response.body.msg).to.deep.equal(
                 'Please sort by ascending or descending'
               );
             });
