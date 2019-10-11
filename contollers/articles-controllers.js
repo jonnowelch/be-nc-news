@@ -14,7 +14,8 @@ exports.sendAllArticles = (req, res, next) => {
 
 exports.sendArticlesById = (req, res, next) => {
   selectArticlesById(req.params.article_id)
-    .then(article => {
+    .then(([article]) => {
+      // console.log({ article });
       res.status(200).send({ article });
     })
     .catch(next);
@@ -23,7 +24,7 @@ exports.sendArticlesById = (req, res, next) => {
 exports.patchVotesOnArticles = (req, res, next) => {
   updateArticles(req.body.inc_vote, req.params.article_id)
     .then(article => {
-      res.status(202).send(article);
+      res.status(200).send(article);
     })
     .catch(next);
 };

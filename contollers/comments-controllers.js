@@ -28,7 +28,7 @@ exports.sendCommentsByArticleId = (req, res, next) => {
 
 exports.patchCommentVote = (req, res, next) => {
   updateCommentVote(req.body.inc_votes, req.params.comment_id).then(comment => {
-    res.status(202).send(comment);
+    res.status(200).send(comment);
   });
 };
 

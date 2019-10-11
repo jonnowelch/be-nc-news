@@ -45,7 +45,6 @@ describe('/api', () => {
         return request[method]('/api/topics/')
           .expect(405)
           .then(({ body: { msg } }) => {
-            console.log(msg);
             expect(msg).to.deep.equal('method not allowed');
           });
       });
@@ -179,7 +178,7 @@ describe('/api', () => {
           expect(response.body.articles[0].topic).to.deep.equal('mitch');
         });
     });
-    describe('/:article_id', () => {
+    describe.only('/:article_id', () => {
       it('METHOD ERROR returns error message when any method other than get or patch used for /articles/:article_id', () => {
         const invalidMethods = ['put', 'delete'];
         const methodPromises = invalidMethods.map(method => {
@@ -196,10 +195,11 @@ describe('/api', () => {
           .get('/api/articles/1')
           .expect(200)
           .then(response => {
+            // console.log(response.body);
             expect(response.body).to.be.an('object');
             expect(response.body).to.contain.keys('article');
-            expect(response.body.article[0].comment_count).to.equal('13');
-            expect(response.body.article[0]).to.contain.keys(
+            expect(response.body.article.comment_count).to.equal('13');
+            expect(response.body.article).to.contain.keys(
               'author',
               'title',
               'article_id',
@@ -211,10 +211,19 @@ describe('/api', () => {
             );
           });
       });
-      it('PATCH 202 able to update the votes property in the database', () => {
+      it('GET ERROR /: article_id not present', () => {
+        return request
+          .get('/api/articles/1000')
+          .expect(404)
+          .then(response => {
+            console.log(response.body);
+            expect(response.body.msg).to.equal('Article does not exist');
+          });
+      });
+      it('PATCH 200 able to update the votes property in the database', () => {
         return request
           .patch('/api/articles/1')
-          .expect(202)
+          .expect(200)
           .send({ inc_vote: 1 })
           .then(response => {
             expect(response.body.votes).to.equal(101);
@@ -303,10 +312,10 @@ describe('/api', () => {
   });
   describe('/comments', () => {
     describe('/:comment_id', () => {
-      it('PATCH 202 /:comment_id able to update the votes property of a comment', () => {
+      it('PATCH 200 /:comment_id able to update the votes property of a comment', () => {
         return request
           .patch('/api/comments/1')
-          .expect(202)
+          .expect(200)
           .send({ inc_votes: 1 })
           .then(response => {
             expect(response.body.votes).to.equal(15);
