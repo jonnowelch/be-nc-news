@@ -27,6 +27,7 @@ exports.sendCommentsByArticleId = (req, res, next) => {
 exports.patchCommentVote = (req, res, next) => {
   updateCommentVote(req.body.inc_votes, req.params.comment_id)
     .then(comment => {
+      // console.log(comment);
       res.status(200).send(comment);
     })
     .catch(next);
@@ -34,7 +35,7 @@ exports.patchCommentVote = (req, res, next) => {
 
 exports.deleteComment = (req, res, next) => {
   removeComment(req.params.comment_id)
-    .then(response => {
+    .then(() => {
       res.sendStatus(204);
     })
     .catch(next);

@@ -158,9 +158,17 @@ describe('/api', () => {
           expect(response.body.articles[0].author).to.deep.equal('rogersop');
         });
     });
-    it.only('GET 200 /author=valid author with no articles return an empty array', () => {
+    it('GET 200 /author=valid author with no articles return an empty array', () => {
       return request
         .get('/api/articles?author=lurker')
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles.length).to.deep.equal(0);
+        });
+    });
+    it('GET 200 /topic= valid topic with no articles return an empty array', () => {
+      return request
+        .get('/api/articles?topic=paper')
         .expect(200)
         .then(response => {
           expect(response.body.articles.length).to.deep.equal(0);
@@ -356,6 +364,14 @@ describe('/api', () => {
       });
       it('DELETE 204 /: comment_id deletes a comment', () => {
         return request.delete('/api/comments/1').expect(204);
+      });
+      it('DELETE error returns 404 when handed a comment id that doesnt exist', () => {
+        return request
+          .delete('/api/comments/999')
+          .expect(404)
+          .then(response => {
+            expect(response.body.msg).to.equal('Comment does not exist');
+          });
       });
       it('METHOD ERROR returns error message when any method other than patch or delete used for /:comment_id', () => {
         const invalidMethods = ['get', 'post'];

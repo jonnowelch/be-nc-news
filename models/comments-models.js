@@ -50,10 +50,20 @@ exports.updateCommentVote = (vote_update_amount, article_id) => {
 };
 
 exports.removeComment = comment_id => {
-  // console.log(comment_id);
   return connection
     .into('comments_table')
     .where('comment_id', comment_id)
     .delete()
-    .returning('*');
+    .then(deletedComment => {
+      // console.log(deletedComment);
+      if (deletedComment === 0) {
+        // console.log(deletedComment.length);
+        return Promise.reject({
+          status: 404,
+          msg: 'Comment does not exist'
+        });
+      } else {
+        return deletedComment;
+      }
+    });
 };

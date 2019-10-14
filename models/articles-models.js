@@ -29,16 +29,46 @@ exports.selectAllArticles = query => {
       if (query.topic) queryBuilder.where('topic', query.topic);
     })
     .then(articles => {
-      console.log(articles);
-      if (!articles.length)
-        return Promise.reject({
-          status: 404,
-          msg: 'Author does not exist'
-        });
+      // console.log(articles);
+      if (!articles.length) {
+        if (query.author) {
+          return checkUserExists(query.author);
+        }
+        if (query.topic) {
+          return checkTopicExists(query.topic);
+        }
+      }
       return articles;
     });
 };
 
+function checkUserExists(username) {
+  return connection
+    .select('*')
+    .from('users_table')
+    .where('username', username)
+    .then(([user]) => {
+      if (user) return [];
+      return Promise.reject({
+        status: 404,
+        msg: 'Author does not exist'
+      });
+    });
+}
+
+function checkTopicExists(topic) {
+  return connection
+    .select('*')
+    .from('topics_table')
+    .where('slug', topic)
+    .then(([topic]) => {
+      if (topic) return [];
+      return Promise.reject({
+        status: 404,
+        msg: 'Topic does not exist'
+      });
+    });
+}
 exports.selectArticlesById = article_id => {
   return connection
     .select('articles_table.*')
