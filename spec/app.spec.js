@@ -307,7 +307,7 @@ describe('/api', () => {
               expect(response.body.msg).to.equal('article doesnt exist');
             });
         });
-        it.only('POST ERROR 400 trying to post a comment without all the necessary details produces a 400 error', () => {
+        it('POST ERROR 400 trying to post a comment without all the necessary details produces a 400 error', () => {
           return request
             .post('/api/articles/1/comments')
             .expect(400)
@@ -331,12 +331,20 @@ describe('/api', () => {
               expect(response.body.comments).to.have.length(2);
             });
         });
+        it('returns an empty array when article exists but no attached comments', () => {
+          return request
+            .get('/api/articles/2/comments')
+            .expect(200)
+            .then(response => {
+              expect(response.body.comments).to.have.length(0)
+            })
+        })
         it('GET ERROR /comments returns an error for an article id that doesnt exist', () => {
           return request
             .get('/api/articles/999/comments')
             .expect(404)
             .then(response => {
-              expect(response.body.msg).to.equal('Username does not exist');
+              expect(response.body.msg).to.equal('Article does not exist');
             });
         });
         it('GET 200 /comments?sortby=query defaults to sorting by created_at, descending', () => {

@@ -1,7 +1,7 @@
 const connection = require('../db/connections');
 
 exports.addComment = (username, body, article_id) => {
-  if (!username, body, article_id) {
+  if (!username || !body || !article_id) {
     return Promise.reject({
       status: 400,
       msg: 'please enter a comment'
@@ -15,6 +15,20 @@ exports.addComment = (username, body, article_id) => {
       return comment;
     });
 };
+
+function checkArticleExists(article_id) {
+  return connection
+    .select('*')
+    .from('articles_table')
+    .where('article_id', article_id)
+    .then(([article]) => {
+      if (article) return [];
+      return Promise.reject({
+        status: 404,
+        msg: 'Article does not exist'
+      });
+    });
+}
 
 exports.selectCommentsByArticleId = (article_id, sort_by, order) => {
   const sortBy = sort_by || 'created_at';
@@ -35,10 +49,7 @@ exports.selectCommentsByArticleId = (article_id, sort_by, order) => {
     .orderBy(sortBy, sortOrder)
     .then(comments => {
       if (!comments.length) {
-        return Promise.reject({
-          status: 404,
-          msg: 'Username does not exist'
-        });
+        return checkArticleExists(article_id)
       }
       return comments;
     });
