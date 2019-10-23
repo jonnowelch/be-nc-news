@@ -24,6 +24,22 @@ describe('/api', () => {
   after(() => {
     return connection.destroy();
   });
+  it('GET / 200 returns a JSON describing all endpoints with an example', () => {
+    return request.get('/api/').then(response => {
+      expect(response.body.endpoints).to.contain.keys(
+        'GET /api',
+        'GET /api/topics',
+        'GET /api/users/:username',
+        'GET /api/articles',
+        'GET /api/articles/:article_id',
+        'GET /api/articles/:article_id/comments',
+        'POST /api/articles/:article_id/comments',
+        'PATCH /api/articles/:article_id',
+        'PATCH /api/comments/:comment_id',
+        'DELETE /api/comments/:comment_id'
+      );
+    });
+  });
   describe('/topics', () => {
     it('GET / 200 returns all of the topics in an object with a key name of what is being sent', () => {
       return request
@@ -315,7 +331,7 @@ describe('/api', () => {
             .then(response => {
               expect(response.body.msg).to.equal('please enter a comment');
             });
-        })
+        });
         it('GET 200 /comments returns an array of comments for the article', () => {
           return request
             .get('/api/articles/9/comments')
@@ -336,9 +352,9 @@ describe('/api', () => {
             .get('/api/articles/2/comments')
             .expect(200)
             .then(response => {
-              expect(response.body.comments).to.have.length(0)
-            })
-        })
+              expect(response.body.comments).to.have.length(0);
+            });
+        });
         it('GET ERROR /comments returns an error for an article id that doesnt exist', () => {
           return request
             .get('/api/articles/999/comments')

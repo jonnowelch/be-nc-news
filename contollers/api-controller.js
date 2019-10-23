@@ -1,9 +1,6 @@
-const { selectAllEndpoints } = require('../models/api-model');
+const { endpoints } = require('../');
 
 exports.sendEndpointsJSON = (req, res, next) => {
-  selectAllEndpoints()
-    .then(endpoints => {
-      res.status(200).send({ endpoints });
-    })
-    .catch(next);
+  console.log(endpoints);
+  res.json(200).send({ endpoints });
 };

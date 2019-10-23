@@ -1,8 +1,17 @@
 const apiRouter = require('express').Router();
 
-// apiRouter.get('/', () => {
-//   console.log('hello!');
-// });
+const { send405Error } = require('../errors');
+
+// const { sendEndpointsJSON } = require('../contollers/api-controller');
+
+const endpoints = require('../endpoints.json');
+
+apiRouter
+  .route('/')
+  .get((req, res, next) => {
+    res.json({ endpoints });
+  })
+  .all(send405Error);
 
 const topicsRouter = require('./topics-router');
 apiRouter.use('/topics', topicsRouter);
