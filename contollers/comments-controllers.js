@@ -8,7 +8,7 @@ const {
 exports.postNewComment = (req, res, next) => {
   addComment(req.body.username, req.body.body, req.params.article_id)
     .then(comment => {
-      res.status(201).send([comment[0]]);
+      res.status(201).send({ comment: [comment[0]] });
     })
     .catch(next);
 };
@@ -28,7 +28,7 @@ exports.patchCommentVote = (req, res, next) => {
   updateCommentVote(req.body.inc_votes, req.params.comment_id)
     .then(comment => {
       // console.log(comment);
-      res.status(200).send(comment);
+      res.status(200).send({ comment });
     })
     .catch(next);
 };

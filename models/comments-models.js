@@ -1,6 +1,12 @@
 const connection = require('../db/connections');
 
 exports.addComment = (username, body, article_id) => {
+  if (!username, body, article_id) {
+    return Promise.reject({
+      status: 400,
+      msg: 'please enter a comment'
+    })
+  }
   return connection
     .insert({ author: username, body, article_id })
     .into('comments_table')

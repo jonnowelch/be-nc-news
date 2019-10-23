@@ -250,7 +250,7 @@ describe('/api', () => {
           .expect(200)
           .send({ inc_vote: 1 })
           .then(response => {
-            expect(response.body.votes).to.equal(101);
+            expect(response.body.article.votes).to.equal(101);
           });
       });
       it('PATCH error number not included to alter votes by', () => {
@@ -277,7 +277,7 @@ describe('/api', () => {
             .expect(201)
             .send({ username: 'rogersop', body: 'shut up you bloody guy' })
             .then(response => {
-              expect(response.body[0]).to.have.keys(
+              expect(response.body.comment[0]).to.have.keys(
                 'comment_id',
                 'body',
                 'author',
@@ -307,6 +307,15 @@ describe('/api', () => {
               expect(response.body.msg).to.equal('article doesnt exist');
             });
         });
+        it.only('POST ERROR 400 trying to post a comment without all the necessary details produces a 400 error', () => {
+          return request
+            .post('/api/articles/1/comments')
+            .expect(400)
+            .send({ username: 'rogersop' })
+            .then(response => {
+              expect(response.body.msg).to.equal('please enter a comment');
+            });
+        })
         it('GET 200 /comments returns an array of comments for the article', () => {
           return request
             .get('/api/articles/9/comments')
@@ -359,7 +368,7 @@ describe('/api', () => {
           .expect(200)
           .send({ inc_votes: 1 })
           .then(response => {
-            expect(response.body.votes).to.equal(15);
+            expect(response.body.comment.votes).to.equal(15);
           });
       });
       it('DELETE 204 /: comment_id deletes a comment', () => {

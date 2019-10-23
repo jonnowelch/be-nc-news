@@ -36,12 +36,3 @@ articlesRouter
 
 module.exports = articlesRouter;
 
-// articlesRouter.get('/', sendAllArticles);
-
-// articlesRouter.get('/:article_id', sendArticlesById);
-
-// articlesRouter.patch('/:article_id', patchVotesOnArticles);
-
-// articlesRouter.post('/:article_id/comments', postNewComment);
-
-// articlesRouter.get('/:article_id/comments', sendCommentsByArticleId);
