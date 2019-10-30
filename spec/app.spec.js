@@ -66,7 +66,16 @@ describe('/api', () => {
       return Promise.all(methodPromises);
     });
   });
-  describe('/users', () => {
+  describe.only('/users', () => {
+    it('GET 200 returns all users', () => {
+      return request
+        .get('/api/users')
+        .expect(200)
+        .then(response => {
+          expect(response.body).to.be.an('object');
+          expect(response.body).to.contain.keys('users');
+        });
+    });
     it('GET /:username 200 returns user with selected username', () => {
       return request
         .get('/api/users/rogersop')

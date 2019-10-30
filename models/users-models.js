@@ -1,5 +1,14 @@
 const connection = require('../db/connections');
 
+exports.selectAllUsers = () => {
+  return connection
+    .select('*')
+    .from('users_table')
+    .then(data => {
+      return data;
+    });
+};
+
 exports.selectUsers = username => {
   return connection
     .first('*')
